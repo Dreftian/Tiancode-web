@@ -67,3 +67,36 @@ if ('IntersectionObserver' in window && spySections.length && spyLinks.length) {
   }, { rootMargin: '-40% 0px -55% 0px' });
   spySections.forEach(function (section) { spy.observe(section); });
 }
+
+/* ---------- Copiar comando de instalación rápida en Hero ---------- */
+const heroCmd = document.getElementById('hero-cmd-box');
+if (heroCmd) {
+  heroCmd.addEventListener('click', function () {
+    const textToCopy = 'winget install Dreftian.Tiancode';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textToCopy);
+    }
+    heroCmd.classList.add('is-copied');
+    setTimeout(function () {
+      heroCmd.classList.remove('is-copied');
+    }, 2200);
+  });
+}
+
+/* ---------- Studio Interactivo / Showcase Tabs Switcher ---------- */
+const showcaseTabBtns = document.querySelectorAll('.showcase-tab-btn');
+const showcasePanels = document.querySelectorAll('.showcase-panel');
+
+if (showcaseTabBtns.length && showcasePanels.length) {
+  showcaseTabBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const targetId = btn.getAttribute('data-target-panel');
+      showcaseTabBtns.forEach(function (b) { b.classList.remove('is-active'); });
+      showcasePanels.forEach(function (p) { p.classList.remove('is-active'); });
+      btn.classList.add('is-active');
+      const targetPanel = document.getElementById(targetId);
+      if (targetPanel) targetPanel.classList.add('is-active');
+    });
+  });
+}
+

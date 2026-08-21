@@ -36,13 +36,18 @@ Cuenta con una terminal integrada ultra-rápida, previsualización en vivo (**Li
 
 ## 🚀 Descargas Oficiales (Windows 10 y 11)
 
+```powershell
+# Instalación rápida con Windows Package Manager (winget)
+winget install Dreftian.Tiancode
+```
+
 | Tipo | Archivo | Tamaño | Arquitectura | Enlace |
 |---|---|---|---|---|
 | 📦 **Instalador de Windows** | `Tiancode.exe` | ~234 MB | x64 (64-bit) | [**Descargar Instalador (.exe)**](https://github.com/Dreftian/Tiancode/releases/latest/download/Tiancode.exe) |
 | 💼 **Versión Portable** | `Tiancode-portable.exe` | ~234 MB | x64 (64-bit) | [**Descargar Portable (.exe)**](https://github.com/Dreftian/Tiancode/releases/latest/download/Tiancode-portable.exe) |
 
 > [!TIP]
-> También puedes explorar la lista completa de cambios y versiones anteriores en la sección de [**Releases**](https://github.com/Dreftian/Tiancode/releases) o en [**tiancode.vercel.app/recursos/descargas.html**](https://tiancode.vercel.app/recursos/descargas.html).
+> También puedes explorar el **Studio Interactivo** en [**tiancode.vercel.app/#showcase**](https://tiancode.vercel.app/#showcase) o descargar versiones anteriores en [**Releases**](https://github.com/Dreftian/Tiancode/releases).
 
 ---
 

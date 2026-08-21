@@ -45,6 +45,9 @@
   --term-bg: #f1f3f9;
   --scroll-thumb: rgba(15, 23, 42, 0.22);
   --skel-shine: rgba(15, 23, 42, 0.07);
+  --glare-opacity: 0.18;
+  --showcase-border: rgba(99, 102, 241, 0.25);
+  --showcase-glow: rgba(99, 102, 241, 0.15);
 }
 
 [data-theme="dark"] {
@@ -70,6 +73,9 @@
   --term-bg: #0c0c13;
   --scroll-thumb: rgba(148, 163, 184, 0.26);
   --skel-shine: rgba(255, 255, 255, 0.08);
+  --glare-opacity: 0.25;
+  --showcase-border: rgba(99, 102, 241, 0.35);
+  --showcase-glow: rgba(99, 102, 241, 0.22);
 }
 
 /* ================= Base ================= */

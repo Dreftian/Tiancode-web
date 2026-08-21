@@ -1,0 +1,27 @@
+# System
+.DS_Store
+Thumbs.db
+
+# Dependencias (solo si se añade tooling local)
+node_modules/
+.bun/
+
+# Logs
+*.log
+
+# Vercel
+.vercel/
+
+# Local app workspaces (kept in main development branches)
+backend/
+frontend/
+tools/
+install/
+commands/
+skills/
+.turbo/
+.vscode/
+.zcode/
+temp_thumb_*.png
+preview_master_icon.png
+

@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# Tiancode CLI installer for macOS and Linux.
+#   curl -fsSL https://tiancode.vercel.app/install | bash
+#   curl -fsSL https://tiancode.vercel.app/install | bash -s -- --version 1.0.0
+# Downloads the prebuilt binary from GitHub Releases into ~/.tiancode/bin and adds it to PATH.
+set -euo pipefail
+
+REPO="Dreftian/Tiancode"
+INSTALL_DIR="${TIANCODE_INSTALL_DIR:-$HOME/.tiancode/bin}"
+VERSION="${TIANCODE_VERSION:-}"
+MODIFY_PATH=1
+
+RED='\033[0;31m'; GREEN='\033[0;32m'; MUTED='\033[0;2m'; NC='\033[0m'
+
+usage() {
+  cat <<EOF
+Tiancode CLI installer
+
+Usage: install [--version X.Y.Z] [--no-modify-path]
+
+  --version <v>      install a specific version (default: latest release)
+  --no-modify-path   do not touch .bashrc / .zshrc / config.fish
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help) usage; exit 0 ;;
+    -v|--version) VERSION="$2"; shift 2 ;;
+    --no-modify-path) MODIFY_PATH=0; shift ;;
+    *) echo -e "${RED}Unknown option: $1${NC}" >&2; usage; exit 1 ;;
+  esac
+done
+
+os="$(uname -s)"
+arch="$(uname -m)"
+case "$os" in
+  Darwin) os="darwin" ;;
+  Linux) os="linux" ;;
+  *) echo -e "${RED}Unsupported OS: $os. On Windows run: irm https://tiancode.vercel.app/install.ps1 | iex${NC}" >&2; exit 1 ;;
+esac
+case "$arch" in
+  x86_64|amd64) arch="x64" ;;
+  arm64|aarch64) arch="arm64" ;;
+  *) echo -e "${RED}Unsupported architecture: $arch${NC}" >&2; exit 1 ;;
+esac
+
+if [[ "$os" == "linux" ]]; then asset="tiancode-${os}-${arch}.tar.gz"; else asset="tiancode-${os}-${arch}.zip"; fi
+if [[ -n "$VERSION" ]]; then
+  url="https://github.com/${REPO}/releases/download/v${VERSION#v}/${asset}"
+else
+  url="https://github.com/${REPO}/releases/latest/download/${asset}"
+fi
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+echo -e "${MUTED}Downloading ${url}${NC}"
+if command -v curl >/dev/null 2>&1; then
+  curl -fsSL "$url" -o "$tmp/$asset"
+elif command -v wget >/dev/null 2>&1; then
+  wget -q "$url" -O "$tmp/$asset"
+else
+  echo -e "${RED}curl or wget is required${NC}" >&2; exit 1
+fi
+
+mkdir -p "$INSTALL_DIR"
+if [[ "$asset" == *.tar.gz ]]; then
+  tar -xzf "$tmp/$asset" -C "$tmp"
+else
+  if ! command -v unzip >/dev/null 2>&1; then echo -e "${RED}unzip is required${NC}" >&2; exit 1; fi
+  unzip -qo "$tmp/$asset" -d "$tmp"
+fi
+bin="$(find "$tmp" -type f -name tiancode | head -n 1)"
+if [[ -z "$bin" ]]; then echo -e "${RED}The archive did not contain the tiancode binary${NC}" >&2; exit 1; fi
+install -m 755 "$bin" "$INSTALL_DIR/tiancode"
+if [[ "$os" == "darwin" ]]; then xattr -d com.apple.quarantine "$INSTALL_DIR/tiancode" 2>/dev/null || true; fi
+
+if [[ "$MODIFY_PATH" == "1" ]] && ! echo ":$PATH:" | grep -q ":$INSTALL_DIR:"; then
+  line="export PATH=\"$INSTALL_DIR:\$PATH\""
+  for rc in "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.profile"; do
+    if [[ -f "$rc" ]] && ! grep -Fq "$INSTALL_DIR" "$rc"; then printf '\n# Tiancode CLI\n%s\n' "$line" >> "$rc"; fi
+  done
+  fish="$HOME/.config/fish/config.fish"
+  if [[ -f "$fish" ]] && ! grep -Fq "$INSTALL_DIR" "$fish"; then printf '\n# Tiancode CLI\nfish_add_path %s\n' "$INSTALL_DIR" >> "$fish"; fi
+  echo -e "${MUTED}Added $INSTALL_DIR to PATH (open a new shell).${NC}"
+fi
+
+echo -e "${GREEN}Tiancode CLI installed at $INSTALL_DIR/tiancode${NC}"
+echo -e "${MUTED}Run: tiancode            # terminal UI in the current folder${NC}"
+echo -e "${MUTED}     tiancode web        # server + web interface${NC}"
+echo -e "${MUTED}     tiancode run \"...\"  # one-shot prompt${NC}"
